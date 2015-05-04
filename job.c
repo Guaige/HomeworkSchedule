@@ -86,6 +86,13 @@ int allocjid()
 
 void updateall()
 {
+	//updateall函数执行前队列查看
+	#ifdef DEBUG
+	printf("updateall function is starting!\n");
+		struct jobcmd statcmd;
+		do_stat(statcmd);
+    #endif
+	
 	struct waitqueue *p;
 
 	/* 更新作业运行时间 */
@@ -100,6 +107,12 @@ void updateall()
 			p->job->wait_time = 0;
 		}
 	}
+	
+	//updateall函数执行后队列查看
+	#ifdef DEBUG
+		printf("updateall function is finished.\n");
+		do_stat(statcmd);
+    #endif
 }
 
 struct waitqueue* jobselect()
