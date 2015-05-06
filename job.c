@@ -47,7 +47,7 @@ void scheduler()
 	switch(cmd.type){
 	case ENQ:
 		#ifdef DEBUG
-			printf("Execute enq!\n");
+			printf("Execute enq!\n");		
 		#endif
 		do_enq(newjob,cmd);
 		break;
@@ -59,9 +59,13 @@ void scheduler()
 		break;
 	case STAT:
 		#ifdef DEBUG
+			printf("SATA Starting!\n");
+			do_stat(cmd);
 			printf("Execute stat!\n");
+			do_stat(cmd);
+			printf("SATA Done!\n");
+			do_stat(cmd);
 		#endif
-		do_stat(cmd);
 		break;
 	default:
 		break;
@@ -134,6 +138,21 @@ struct waitqueue* jobselect()
 			if (select == selectprev)	//证明等待队列中只有一个元素
 				head = NULL;
 	}
+	if(select)
+		printf("%s\t%s%d\t%s%d\t%s%d\t%s%d\t%s%d\n",
+			"Selected job Info:",
+			"jid:",
+			select->job->jid,
+			"pid:",
+			select->job->pid,
+			"ownerid:",
+			select->job->ownerid,
+			"run_time:",
+			select->job->run_time,
+			"wait_time:",
+			select->job->wait_time);
+	else printf("No Select!\n");
+		//	timebuf,"RUNNING");
 	return select;
 }
 
@@ -233,7 +252,13 @@ void do_enq(struct jobinfo *newjob,struct jobcmd enqcmd)
 	sigset_t zeromask;
 
 	sigemptyset(&zeromask);
-
+/////Guai/////
+	#ifdef DEBUG
+	printf("ENQ function is starting!\n");
+		struct jobcmd statcmd;
+		do_stat(statcmd);
+    #endif
+/////Guai//////////
 	/* 封装jobinfo数据结构 */
 	newjob = (struct jobinfo *)malloc(sizeof(struct jobinfo));
 	newjob->jid = allocjid();
@@ -281,6 +306,7 @@ void do_enq(struct jobinfo *newjob,struct jobcmd enqcmd)
 	}else
 		head=newnode;
 
+
 	/*为作业创建进程*/
 	if((pid=fork())<0)
 		error_sys("enq fork failed");
@@ -305,6 +331,13 @@ void do_enq(struct jobinfo *newjob,struct jobcmd enqcmd)
 	}else{
 		newjob->pid=pid;
 	}
+/////Guai/////
+	#ifdef DEBUG
+	printf("ENQ function is done!\n");
+		//struct jobcmd statcmd;
+		do_stat(statcmd);
+    #endif
+/////Guai//////////
 }
 
 void do_deq(struct jobcmd deqcmd)
@@ -312,7 +345,13 @@ void do_deq(struct jobcmd deqcmd)
 	int deqid,i;
 	struct waitqueue *p,*prev,*select,*selectprev;
 	deqid=atoi(deqcmd.data);
-
+/////Guai/////
+	#ifdef DEBUG
+	printf("DEQ function is starting!\n");
+		struct jobcmd statcmd;
+		do_stat(statcmd);
+    #endif
+/////Guai//////////
 #ifdef DEBUG
 	printf("deq jid %d\n",deqid);
 #endif
@@ -355,6 +394,13 @@ void do_deq(struct jobcmd deqcmd)
 			select=NULL;
 		}
 	}
+/////Guai/////
+	#ifdef DEBUG
+	printf("DEQ function is done!\n");
+		//struct jobcmd statcmd;
+		do_stat(statcmd);
+    #endif
+/////Guai//////////
 }
 
 void do_stat(struct jobcmd statcmd)
