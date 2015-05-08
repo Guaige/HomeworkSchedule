@@ -20,11 +20,7 @@
 //#define DEBUG_LJL_JOB
 //#define DEBUG_LJL_ENQ
 //#define DEBUG_LJL_DEQ
-<<<<<<< HEAD
 #define DEBUG_LJL_STAT
-=======
-//#define DEBUG_LJL_STAT
->>>>>>> 8061bd81b994c7c70b41ad0093ba161bd1688c2f
 //#define DEBUG_LJL_TASK9
 #define DEBUG_LJL_TASK10
 #endif
@@ -63,10 +59,7 @@ struct jobinfo{
     int wait_time;        /* 作业在等待队列中等待时间 */
     time_t create_time;   /* 作业创建时间 */
     int run_time;         /* 作业运行时间 */
-<<<<<<< HEAD
     int round_time;
-=======
->>>>>>> 8061bd81b994c7c70b41ad0093ba161bd1688c2f
     enum jobstate state;  /* 作业状态 */
 };
 
@@ -86,13 +79,10 @@ void do_stat(struct jobcmd statcmd);//实行stat命令
 void updateall();//更新等待队列中各个作业的信息
 struct waitqueue* jobselect();//从等待队列中选取下一个作业
 void jobswitch();//作业轮转
-<<<<<<< HEAD
 int canswitch();
 void movejobtoend(struct waitqueue *p );
 
 int hasequalpri();
-=======
->>>>>>> 8061bd81b994c7c70b41ad0093ba161bd1688c2f
 
 void error_doit(int errnoflag,const char *fmt,va_list ap);
 void error_sys(const char *fmt,...);
