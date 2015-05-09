@@ -78,9 +78,16 @@ void scheduler()
       
 		break;
 	case STAT:
+		///////Guai//////////////
 		#ifdef DEBUG
-			printf("Execute stat!\n");
-		#endif
+			printf("STAT Starting!\n");
+			do_stat(cmd);
+ 			printf("Execute stat!\n");		 			
+			do_stat(cmd);
+			printf("STAT Done!\n");
+			do_stat(cmd);
+ 		#endif	
+		///////Guai////////	 		
 		#ifdef DEBUG_LJL_JOB
 			printf("In the 'STAT' case\n");
 		#endif
@@ -250,6 +257,25 @@ struct waitqueue* jobselect()
 			//等待队列中只有当前一个作业
 			head = head->next;
 	}
+	/////////Guai////////////
+        #ifdef DEBUG
+	if(select)
+		printf("%s\t%s%d\t%s%d\t%s%d\t%s%d\t%s%d\n",
+			"Selected job Info:",
+			"jid:",
+			select->job->jid,
+			"pid:",
+			select->job->pid,
+			"ownerid:",
+			select->job->ownerid,
+			"run_time:",
+			select->job->run_time,
+			"wait_time:",
+			select->job->wait_time);
+	else printf("No Select!\n");
+		//	timebuf,"RUNNING");
+	#endif
+	////////Guai///////////////
 	return select;
 }
 
@@ -519,6 +545,13 @@ void sig_handler(int sig,siginfo_t *info,void *notused)
 
 void do_enq(struct jobinfo *newjob,struct jobcmd enqcmd)
 {
+	/////Guai/////
+	#ifdef DEBUG
+	printf("ENQ function is starting!\n");
+		struct jobcmd statcmd;
+		do_stat(statcmd);
+        #endif
+        /////Guai//////////
 	struct waitqueue *newnode,*p;
 	int i=0,pid;
 	char *offset,*argvec,*q;
@@ -537,7 +570,7 @@ void do_enq(struct jobinfo *newjob,struct jobcmd enqcmd)
 	newjob->create_time = time(NULL);
 	newjob->wait_time = 0;
 	newjob->run_time = 0;
-    newjob->round_time = 0;
+        newjob->round_time = 0;
 	arglist = (char**)malloc(sizeof(char*)*(enqcmd.argnum+1));
 	newjob->cmdarg = arglist;
 	offset = enqcmd.data;
@@ -608,10 +641,24 @@ void do_enq(struct jobinfo *newjob,struct jobcmd enqcmd)
         siggoon=0;
 		newjob->pid=pid;
 	}
-}
+	/////Guai/////
+	#ifdef DEBUG
+	printf("ENQ function is done!\n");
+		//struct jobcmd statcmd;
+		do_stat(statcmd);
+        #endif
+        /////Guai//////////
+}   
 
 void do_deq(struct jobcmd deqcmd)
 {
+	/////Guai/////
+	#ifdef DEBUG
+	printf("DEQ function is starting!\n");
+		struct jobcmd statcmd;
+		do_stat(statcmd);
+        #endif
+        /////Guai//////////
 	int deqid,i;
 	struct waitqueue *p,*prev,*select,*selectprev;
 	deqid=atoi(deqcmd.data);
@@ -672,6 +719,13 @@ void do_deq(struct jobcmd deqcmd)
 			select=NULL;
 		}
 	}
+	/////Guai/////
+	#ifdef DEBUG
+	printf("DEQ function is done!\n");
+		//struct jobcmd statcmd;
+		do_stat(statcmd);
+        #endif
+        /////Guai//////////
 }
 
 void do_stat(struct jobcmd statcmd)
