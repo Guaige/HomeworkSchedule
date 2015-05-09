@@ -9,6 +9,7 @@
 #include <fcntl.h>
 #include <time.h>
 #include "job.h"
+//#define DEBUG
 
 int jobid=0;
 int siginfo=1;
@@ -138,6 +139,14 @@ int allocjid()
 
 void updateall()
 {
+	//updateall函数执行前队列查看
+	//---lp--debug task 6--
+	#ifdef DEBUG
+	printf("updateall function is starting!\n");
+		struct jobcmd statcmd;
+		do_stat(statcmd);
+    #endif
+	
 	struct waitqueue *p,*temp;
 
 	/* 更新作业运行时间 */
@@ -162,6 +171,13 @@ void updateall()
 		}
 	p = p->next;
 	}
+	
+	//updateall函数执行后队列查看
+	#ifdef DEBUG
+	//---lp--debug task 6--
+		printf("updateall function is finished.\n");
+		do_stat(statcmd);
+    #endif
 }
 /*because i has prothejob for i need to move to the end*/
 void movejobtoend(struct waitqueue *p){
