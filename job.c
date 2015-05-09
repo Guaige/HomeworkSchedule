@@ -36,6 +36,7 @@ void scheduler()
 	if((count=read(fifo,&cmd,DATALEN))<0)//count 只是为了debug用？
 		error_sys("read fifo failed");
 #ifdef DEBUG
+	printf("Reading whether other process send command!\n");
 	if(count){
 		printf("cmd cmdtype\t%d\ncmd defpri\t%d\ncmd data\t%s\n",cmd.type,cmd.defpri,cmd.data);
 	}
@@ -44,10 +45,16 @@ void scheduler()
 #endif
 
 	/* 更新等待队列中的作业 */
+	#ifdef DEBUG
+		printf("Update jobs in wait queue!\n");
+	#endif
 	updateall();
 
 	switch(cmd.type){
 	case ENQ:
+		#ifdef DEBUG
+			printf("Execute enq!\n");
+		#endif
 		#ifdef DEBUG_LJL_JOB
 			printf("In the 'ENQ' case\n");
 		#endif
@@ -61,6 +68,9 @@ void scheduler()
         }
 		break;
 	case DEQ:
+		#ifdef DEBUG
+			printf("Execute deq!\n");
+		#endif
 		#ifdef DEBUG_LJL_JOB
 			printf("In the 'DEQ' case\n");
 		#endif
@@ -68,6 +78,9 @@ void scheduler()
       
 		break;
 	case STAT:
+		#ifdef DEBUG
+			printf("Execute stat!\n");
+		#endif
 		#ifdef DEBUG_LJL_JOB
 			printf("In the 'STAT' case\n");
 		#endif
@@ -81,6 +94,9 @@ void scheduler()
     {
         return;
     }
+    #ifdef DEBUG
+			printf("Select which jobs to run next!\n");
+	#endif
 	/* 选择高优先级作业 */
 	next=jobselect();
 
@@ -89,6 +105,9 @@ void scheduler()
 			printf("The selected job is %s\n",next->job->cmdarg[0]);
 	#endif
 	/* 作业切换 */
+	#ifdef DEBUG
+			printf("Switch to the next job!\n");
+	#endif
 	jobswitch();
 }
 
@@ -413,6 +432,9 @@ void sig_handler(int sig,siginfo_t *info,void *notused)
 	switch (sig) {
 		case SIGVTALRM: /* 到达计时器所设置的计时间隔 */
 			scheduler();
+			#ifdef DEBUG
+				printf("SIGVTALRM RECEIVES!\n");
+			#endif
 			return;
 		case SIGCHLD: /* 子进程结束时传送给父进程的信号 */
 			ret = waitpid(-1,&status,WNOHANG);//WNOHANG 若pid指定的子进程没有结束，则waitpid()函数返回0，不予以等待。若结束，则返回该子进程的ID。
@@ -724,6 +746,10 @@ int main()
 	struct itimerval new,old;
 	struct stat statbuf;
 	struct sigaction newact,oldact1,oldact2;
+
+	#ifdef DEBUG
+			printf("DEBUE IS OPEN!\n");
+	#endif
 
 	if(stat("/tmp/server",&statbuf)==0){
 		/* 如果FIFO文件存在,删掉 */
